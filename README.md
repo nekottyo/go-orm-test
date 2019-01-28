@@ -1,8 +1,8 @@
-test-go-orm
+go-orm-test
 ===
 
 
-start 
+start
 
 ```sh
 make up
