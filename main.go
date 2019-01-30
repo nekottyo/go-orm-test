@@ -11,7 +11,7 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println("")
-	if err := driver.Gorp(); err != nil {
-		fmt.Println(err)
-	}
+	//if err := driver.Gorp(); err != nil {
+	//	fmt.Println(err)
+	//}
 }

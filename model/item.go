@@ -1,6 +1,5 @@
 package model
 
-type User struct {
+type Item struct {
 	Name string
-	Age  int
 }
