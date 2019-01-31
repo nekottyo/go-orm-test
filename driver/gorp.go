@@ -6,7 +6,9 @@ import (
 
 	gorp "gopkg.in/gorp.v2"
 
+	lorem "github.com/drhodes/golorem"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/k0kubun/pp"
 	"github.com/nekottyo/test-go-orm/model"
 )
 
@@ -18,13 +20,27 @@ func Gorp() (err error) {
 
 	dbmap := &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{"InnoDB", "UTF-8"}}
 
+	fmt.Println("\n### gorp")
+
 	// Model と table 名を紐付ける必要がある
-	dbmap.AddTableWithName(model.User{}, "users").SetKeys(true, "Id")
+	dbmap.AddTableWithName(model.User{}, "users").SetKeys(true, "ID")
+	dbmap.AddTableWithName(model.Item{}, "items").SetKeys(true, "ID")
 	defer dbmap.Db.Close()
 
-	users := []model.User{}
+	for i := 0; i < 10; i++ {
+		item := new(model.Item)
+		item.Name = lorem.Sentence(5, 20)
+		dbmap.Insert(&item)
 
-	fmt.Println("### gorp")
+		user := new(model.User)
+		user.Name = lorem.Word(3, 20)
+		user.Age = 10
+		pp.Print(user)
+
+		dbmap.Insert(&user)
+	}
+
+	var users []User
 	fmt.Println("-- Find all users")
 	if _, err = dbmap.Select(&users, "select * from users"); err != nil {
 		return err
@@ -34,19 +50,13 @@ func Gorp() (err error) {
 	}
 	fmt.Println(users)
 
-	fmt.Println("-- Find name = 'gorp'")
-	err = dbmap.Insert(&model.User{Name: "gorp", Age: 20})
+	var user User
+	fmt.Println("-- Find first user")
+	err = dbmap.SelectOne(&user, "SELECT * FROM users", 1)
 	if err != nil {
 		return err
 	}
-
-	var list []model.User
-	_, err = dbmap.Select(&list, "select * from users where name=?", "gorp")
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(list)
+	pp.Print(user)
 
 	dbmap.Exec("delete from users where name=?", "gorp")
 	return nil

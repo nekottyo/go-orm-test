@@ -72,6 +72,7 @@ func Gorm() (err error) {
 		db.Create(&item)
 		pp.Print(item)
 
+		// 匿名フィールドの継承をすると k:v で表せなくなるので new する必要がある
 		user := new(User)
 		user.Name = lorem.Word(3, 20)
 		user.Age = 10
@@ -82,14 +83,14 @@ func Gorm() (err error) {
 		db.Save(&item)
 	}
 
-	fmt.Println("\n\n-- Find all users with item")
+	fmt.Println("\n\n-- Find first user")
 
 	var users []User
 	if err := db.First(&users).Error; err != nil {
 		return err
 	}
 	pp.Print(users)
-	fmt.Println("\n\n-- Find relation")
+	fmt.Println("\n\n-- Find with relation")
 
 	db.LogMode(true)
 	var user User
@@ -100,7 +101,7 @@ func Gorm() (err error) {
 
 	pp.Print(user)
 
-	if err := db.Delete(model.User{}, "name = ?", "gorm").Error; err != nil {
+	if err := db.Delete(model.User{}).Error; err != nil {
 		return err
 	}
 
